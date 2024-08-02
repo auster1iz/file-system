@@ -1,13 +1,13 @@
 import React from 'react'
-import { FileSystemComponent } from './components/FileSystemComponent'
 import { FILES } from './constants/files'
+import { FileSystemWithDragAndDrop } from './components/FileSystemWithDragAndDrop'
 
 function App() {
   return (
     <div className="pl-10 pt-10">
       <ul>
         {FILES.map((file) => (
-          <FileSystemComponent file={file} key={file.name} />
+          <FileSystemWithDragAndDrop file={file} key={file.name} />
         ))}
       </ul>
     </div>
