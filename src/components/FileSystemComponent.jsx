@@ -3,13 +3,45 @@ import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { DocumentIcon, FolderIcon } from '@heroicons/react/24/solid'
 import { AnimatePresence, motion } from 'framer-motion'
 
-export function FileSystemComponent({ node }) {
+export function FileSystemComponent({ file }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isDraggedOver, setIsDraggedOver] = useState(false)
+  const [isBeingDragged, setIsBeingDragged] = useState(false)
+
+  const onDragEnd = () => {
+    setIsBeingDragged(false)
+  }
+
+  const onDragStart = () => {
+    setIsBeingDragged(true)
+  }
+
+  const onDragOver = (e) => {
+    e.stopPropagation()
+    setIsDraggedOver(true)
+  }
+
+  const onDragLeave = (e) => {
+    e.stopPropagation()
+    setIsDraggedOver(false)
+  }
+
+  const shouldChangeBackgroundColor =
+    isDraggedOver && !isBeingDragged && file.files
 
   return (
-    <li key={node.name}>
-      <span className="flex items-center gap-1.5 py-1">
-        {node.files && node.files.length > 0 && (
+    <li
+      key={file.name}
+      draggable
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
+      <span
+        className={`flex items-center gap-1.5 py-1 pr-4 w-fit ${shouldChangeBackgroundColor ? 'bg-red-300' : ''}`}
+      >
+        {file.files && file.files.length > 0 && (
           <button onClick={() => setIsOpen(!isOpen)} className="p-1 -m-1">
             <motion.span
               animate={{ rotate: isOpen ? 90 : 0 }}
@@ -21,16 +53,16 @@ export function FileSystemComponent({ node }) {
           </button>
         )}
 
-        {node.files ? (
+        {file.files ? (
           <FolderIcon
             className={`size-6 text-sky-500 ${
-              node.files.length === 0 ? 'ml-[22px]' : ''
+              file.files.length === 0 ? 'ml-[22px]' : ''
             }`}
           />
         ) : (
           <DocumentIcon className="ml-[22px] size-6 text-gray-900" />
         )}
-        {node.name}
+        {file.name}
       </span>
 
       <AnimatePresence>
@@ -42,8 +74,8 @@ export function FileSystemComponent({ node }) {
             transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
             className="pl-6 overflow-hidden flex flex-col justify-end"
           >
-            {node.files?.map((node) => (
-              <FileSystemComponent node={node} key={node.name} />
+            {file.files?.map((file) => (
+              <FileSystemComponent file={file} key={file.name} />
             ))}
           </motion.ul>
         )}
